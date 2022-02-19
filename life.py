@@ -5,7 +5,6 @@ from PIL import Image, ImageTk
 # A Life class manages the state of the neighborhood
 class Life:
 
-    # Constructor
     def __init__(self, start_size, neighborhood_size):
         # Starting block
         self.block = np.zeros(start_size)
@@ -36,6 +35,7 @@ class Life:
                 res += "\n"
         return res
 
+    # Generate a random neighborhood
     def generate(self):
         self.finish = False
         for row in range(self.block.shape[0]):
@@ -44,33 +44,40 @@ class Life:
                 lower_col = int((self.neighborhood.shape[1] - self.block.shape[1]) / 2) + col
                 self.neighborhood[lower_row][lower_col] = float(random.getrandbits(1))
 
+    # Empty a neighborhood
     def make_empty(self):
         self.configure(self.block.shape, self.neighborhood.shape)
         
+    # Configure neighborhood to given starting neighborhood size and neighborhood size
     def configure(self, start_size, neighborhood_size):
         self.finish = False
         self.block = np.zeros(start_size)
         self.neighborhood = np.zeros(neighborhood_size)
 
+    # Change the state of a block
     def change_cell(self, row, col):
         try:
             self.neighborhood[row][col] = not self.neighborhood[row][col]
         except:
             print("cell index out of range")
 
-
+    # Return true if neighborhood is empty, false otherwise
     def is_empty(self):
         return not self.neighborhood.any()
 
+    # Return true if neighborhood does not change
     def is_finish(self):
         return self.finish
 
+    # Pause the state of the game
     def pause(self):
         self.is_paused = True
 
+    # Unpause the state of the game
     def unpause(self):
         self.is_paused = False
 
+    # Update the neighborhood depending on Conway's algorithm
     def update(self):
         for row in range(self.neighborhood.shape[0]):
             for col in range(self.neighborhood.shape[1]):
@@ -84,6 +91,7 @@ class Life:
 
         self.change = []
 
+    # Checks which neighbors are to change based on Conway's algorithm
     def check_neighbors(self, row, col):
         neighbor = 0
         
@@ -111,6 +119,7 @@ class Life:
         elif neighbor == 3 and self.neighborhood[row][col] == 0.0:
             self.change.append((row, col))
 
+    # Update the image of the neighborhood
     def update_img(self):
         arr = np.zeros((self.neighborhood.shape[0] * self.scale, self.neighborhood.shape[1] * self.scale))
         for row in range(self.neighborhood.shape[0]):
@@ -121,5 +130,6 @@ class Life:
          
         self.img = ImageTk.PhotoImage(image = Image.fromarray(arr))
 
+    # Get final image
     def get_img(self):
         return self.img
